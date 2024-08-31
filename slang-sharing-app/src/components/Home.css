@@ -1,0 +1,45 @@
+.content-container {
+    width: 96%;
+    height: 900px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f8f9fa;
+    padding: 10px 0;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+.content-body {
+    height: calc(100% - 40px); /* 减去 header 的高度 */
+    overflow-y: auto;
+}
+
+.content-item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.content-item img {
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.content-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
