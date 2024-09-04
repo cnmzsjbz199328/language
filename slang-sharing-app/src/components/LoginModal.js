@@ -20,12 +20,27 @@ const LoginModal = ({ show, onClose }) => {
     };
 
     const loginUser = () => {
-        if (username === 'admin' && password === 'admin') {
-            onClose();
-            navigate('/add-slang'); // Navigate to AddSlang page
-        } else {
-            alert('Invalid username or password');
-        }
+        fetch('http://localhost/slang-sharing-backend/api/login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message || 'Network response was not ok'); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                sessionStorage.setItem('username', username); // 存储在会话中
+                onClose();
+                navigate('/add-slang'); // Navigate to AddSlang page
+            } else {
+                alert(data.message || 'Invalid username or password');
+            }
+        })
+        .catch(error => console.error('Login failed:', error));
     };
 
     const registerUser = () => {

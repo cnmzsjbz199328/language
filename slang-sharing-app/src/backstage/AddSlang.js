@@ -74,7 +74,12 @@ const AddSlang = () => {
         if (formData.audio) {
             data.append('audio', formData.audio);
         }
-
+    
+        const username = sessionStorage.getItem('username'); // 从会话中读取 username
+        if (username) {
+            data.append('contributor', username); // 添加 contributor 字段
+        }
+    
         try {
             const response = await axios.post('http://localhost/slang-sharing-backend/api/addSlang.php', data, {
                 headers: {
