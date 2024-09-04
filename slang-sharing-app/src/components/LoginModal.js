@@ -21,7 +21,6 @@ const LoginModal = ({ show, onClose }) => {
 
     const loginUser = () => {
         if (username === 'admin' && password === 'admin') {
-            alert('Login successful');
             onClose();
             navigate('/add-slang'); // Navigate to AddSlang page
         } else {
@@ -39,36 +38,23 @@ const LoginModal = ({ show, onClose }) => {
             return;
         }
 
-        fetch('/checkUser', {
+        fetch('http://localhost/slang-sharing-backend/api/register.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ email, username, password })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.exists) {
-                alert('User already exists');
-            } else {
-                createAccount(email, password);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
+            return response.json();
         })
-        .catch(error => console.error('Check user failed:', error));
-    };
-
-    const createAccount = (email, password) => {
-        fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        })
-        .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Registration successful');
-                loginUser(email, password);  // Log the user in automatically
-                navigate('/add-slang'); // Navigate to AddSlang page
+                alert('Registration request submitted. Awaiting admin approval.');
+                onClose();
             } else {
-                alert('Registration failed');
+                alert('Registration failed: ' + data.error);
             }
         })
         .catch(error => console.error('Registration failed:', error));

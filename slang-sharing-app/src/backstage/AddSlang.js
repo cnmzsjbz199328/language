@@ -38,19 +38,24 @@ const AddSlang = () => {
     };
 
     const handleAudioStart = async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream);
-        mediaRecorderRef.current.ondataavailable = (event) => {
-            const audioBlob = event.data;
-            const audioUrl = URL.createObjectURL(audioBlob);
-            setFormData({
-                ...formData,
-                audio: audioBlob
-            });
-            setAudioPreview(audioUrl);
-        };
-        mediaRecorderRef.current.start();
-        setIsRecording(true);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                const audioBlob = event.data;
+                const audioUrl = URL.createObjectURL(audioBlob);
+                setFormData({
+                    ...formData,
+                    audio: audioBlob
+                });
+                setAudioPreview(audioUrl);
+            };
+            mediaRecorderRef.current.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('Error accessing microphone: ' + error.message);
+        }
     };
 
     const handleAudioStop = () => {
@@ -95,7 +100,8 @@ const AddSlang = () => {
 
     return (
         <div className="add-slang-container">
-            <form onSubmit={handleSubmit}>
+            <h2>Add New Slang</h2>
+            <form onSubmit={handleSubmit} className="slang-form">
                 <div className="left-section">
                     <div className="image-preview">
                         {imagePreview ? (
@@ -119,7 +125,6 @@ const AddSlang = () => {
                 <div className="right-section">
                     <div className="form-group">
                         <label>Slang:</label>
-                        <hr className="line-input" />
                         <input type="text" name="slang" value={formData.slang} onChange={handleChange} className="slang-input" />
                     </div>
                     <div className="form-group">

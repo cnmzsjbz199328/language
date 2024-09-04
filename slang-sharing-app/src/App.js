@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AlphabetNavigation from './components/AlphabetNavigation';
 import SearchNavbar from './components/SearchNavbar';
 import Home from './components/Home';
 import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import AddSlang from './backstage/AddSlang';
+import AdminPage from './admin/AdminPage'; // 确保路径正确
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
                 } />
                 <Route path="/login" element={<LoginModal show={true} onClose={() => {}} />} />
                 <Route path="/add-slang" element={<AddSlang />} />
+                <Route path="/admin" element={<AdminPage />} /> {/* 添加 AdminPage 路由 */}
             </Routes>
         </Router>
     );
