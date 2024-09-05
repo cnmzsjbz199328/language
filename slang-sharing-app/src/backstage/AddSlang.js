@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { ReactMediaRecorder } from 'react-media-recorder';
 import './AddSlang.css';
 
 const AddSlang = () => {
@@ -12,8 +13,7 @@ const AddSlang = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [audioPreview, setAudioPreview] = useState(null);
     const [isGenerateButtonActive, setIsGenerateButtonActive] = useState(false);
-    const mediaRecorderRef = useRef(null);
-    const [isRecording, setIsRecording] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -24,6 +24,7 @@ const AddSlang = () => {
                 [name]: file
             });
             setImagePreview(URL.createObjectURL(file));
+            console.log('Image selected:', file);
         } else {
             setFormData({
                 ...formData,
@@ -34,37 +35,23 @@ const AddSlang = () => {
             } else if (name === 'explanation' && value.trim() === '') {
                 setIsGenerateButtonActive(false);
             }
+            console.log(`${name} changed:`, value);
         }
     };
 
-    const handleAudioStart = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorderRef.current = new MediaRecorder(stream);
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                const audioBlob = event.data;
-                const audioUrl = URL.createObjectURL(audioBlob);
-                setFormData({
-                    ...formData,
-                    audio: audioBlob
-                });
-                setAudioPreview(audioUrl);
-            };
-            mediaRecorderRef.current.start();
-            setIsRecording(true);
-        } catch (error) {
-            console.error('Error accessing microphone:', error);
-            alert('Error accessing microphone: ' + error.message);
-        }
-    };
-
-    const handleAudioStop = () => {
-        mediaRecorderRef.current.stop();
-        setIsRecording(false);
+    const handleAudioStop = (blobUrl, blob) => {
+        setFormData({
+            ...formData,
+            audio: blob
+        });
+        setAudioPreview(blobUrl);
+        console.log('Audio recorded:', blob);
+        console.log('Audio URL:', blobUrl);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         const data = new FormData();
         data.append('slang', formData.slang);
         data.append('explanation', formData.explanation);
@@ -74,21 +61,26 @@ const AddSlang = () => {
         if (formData.audio) {
             data.append('audio', formData.audio);
         }
-    
-        const username = sessionStorage.getItem('username'); // 从会话中读取 username
+
+        const username = sessionStorage.getItem('username');
         if (username) {
-            data.append('contributor', username); // 添加 contributor 字段
+            data.append('contributor', username);
         }
-    
+
+        const currentTime = new Date().toISOString();
+        data.append('time', currentTime);
+
         try {
             const response = await axios.post('http://localhost/slang-sharing-backend/api/addSlang.php', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log(response.data);
+            console.log('Response:', response.data);
         } catch (error) {
             console.error('Error adding slang:', error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -97,7 +89,14 @@ const AddSlang = () => {
             const response = await axios.post('http://localhost/slang-sharing-backend/api/generateImage.php', {
                 prompt: formData.explanation
             });
-            setImagePreview('data:image/png;base64,' + response.data);
+            const imageBlob = await fetch('data:image/png;base64,' + response.data).then(res => res.blob());
+            const imageFile = new File([imageBlob], 'generated.png', { type: 'image/png' });
+            setFormData({
+                ...formData,
+                image: imageFile
+            });
+            setImagePreview(URL.createObjectURL(imageFile));
+            console.log('Generated image:', imageFile);
         } catch (error) {
             console.error('Error generating image:', error);
         }
@@ -139,12 +138,23 @@ const AddSlang = () => {
                     <div className="form-group">
                         <label>Audio:</label>
                         <div className="audio-controls">
-                            <button type="button" onClick={handleAudioStart} disabled={isRecording} style={{ marginRight: '10px' }}>Start Recording</button>
-                            <button type="button" onClick={handleAudioStop} disabled={!isRecording}>Stop Recording</button>
-                            {audioPreview && <audio src={audioPreview} controls />}
+                            <ReactMediaRecorder
+                                audio
+                                onStop={handleAudioStop}
+                                render={({ startRecording, stopRecording, mediaBlobUrl, status }) => (
+                                    <div>
+                                        <button type="button" onClick={() => { console.log('Start recording'); startRecording(); }} style={{ marginRight: '10px' }}>Start Recording</button>
+                                        <button type="button" onClick={() => { console.log('Stop recording'); stopRecording(); }}>Stop Recording</button>
+                                        <p>Status: {status}</p>
+                                        {audioPreview && <audio src={audioPreview} controls style={{ display: 'block', marginTop: '10px' }} />}
+                                    </div>
+                                )}
+                            />
                         </div>
                     </div>
-                    <button type="submit" className="submit-button">Add Slang</button>
+                    <button type="submit" className={`submit-button ${isSubmitting ? 'disabled' : ''}`} disabled={isSubmitting}>
+                        {isSubmitting ? 'Submitting...' : 'Add Slang'}
+                    </button>
                 </div>
             </form>
         </div>

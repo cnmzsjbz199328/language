@@ -26,17 +26,21 @@ const Home = () => {
                 <span>图片</span>
                 <span>Slang</span>
                 <span>解释</span>
+                <span>贡献者</span>
+                <span>创建时间</span>
                 <span>语音</span>
             </div>
             <div className="content-body">
                 {contentData.map(item => (
                     <ContentItem
                         key={item.id}
-                        id={item.id}
-                        imageSrc={item.imageSrc}
+                        id={Number(item.id)} // 确保 id 是数字类型
+                        imageSrc={`http://localhost/${item.imageSrc}`}
                         slang={item.slang}
                         explanation={item.explanation}
                         audioSrc={item.audioSrc}
+                        contributor={item.contributor || '未知'} // 提供默认值
+                        time={item.timestamp || new Date().toISOString()} // 提供默认值
                     />
                 ))}
             </div>

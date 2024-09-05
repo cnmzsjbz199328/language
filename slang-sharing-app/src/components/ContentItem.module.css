@@ -1,0 +1,47 @@
+.content-item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.content-item > div {
+    flex: 1;
+    text-align: center;
+}
+
+.content-item-id,
+.content-item-slang,
+.content-item-explanation,
+.content-item-contributor,
+.content-item-time,
+.content-item-audio {
+    padding: 0 10px;
+}
+.content-item-image {
+    height: 150px;
+    width: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.content-item-image img {
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+.content-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}

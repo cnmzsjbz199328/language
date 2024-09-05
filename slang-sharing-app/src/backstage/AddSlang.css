@@ -116,3 +116,8 @@
     margin-top: 20px;
     align-self: flex-start; /* 确保提交按钮在右侧部分的最下方 */
 }
+
+.submit-button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

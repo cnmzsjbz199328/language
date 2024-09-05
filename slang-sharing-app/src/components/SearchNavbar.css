@@ -1,12 +1,10 @@
 .search-navbar {
-    width: 90%;
     padding: 10px 20px;
     background-color: #ffffff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
-    margin-left: 70px;
 }
 
 .logo-title {
