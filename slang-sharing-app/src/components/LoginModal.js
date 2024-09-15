@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import config from '../config'; // Import config
 import './LoginModal.css';
 
 const LoginModal = ({ show, onClose }) => {
@@ -20,7 +21,7 @@ const LoginModal = ({ show, onClose }) => {
     };
 
     const loginUser = () => {
-        fetch('http://localhost/slang-sharing-backend/api/login.php', {
+        fetch(`${config.apiHost}/login.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -53,7 +54,7 @@ const LoginModal = ({ show, onClose }) => {
             return;
         }
 
-        fetch('http://localhost/slang-sharing-backend/api/register.php', {
+        fetch(`${config.apiHost}/register.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, username, password })

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ReactMediaRecorder } from 'react-media-recorder';
-import './AddSlang.css';
+import styles from './AddSlang.module.css'; // Import CSS module
+import config from '../config'; // Import config
 
 const AddSlang = () => {
     const [formData, setFormData] = useState({
@@ -12,46 +13,45 @@ const AddSlang = () => {
     });
     const [imagePreview, setImagePreview] = useState(null);
     const [audioPreview, setAudioPreview] = useState(null);
-    const [isGenerateButtonActive, setIsGenerateButtonActive] = useState(false);
+    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+    const [isImageGenerated, setIsImageGenerated] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        if (name === 'image') {
+        if (name === 'image' && files.length > 0) {
             const file = files[0];
-            setFormData({
-                ...formData,
+            setFormData(prevState => ({
+                ...prevState,
                 [name]: file
-            });
+            }));
             setImagePreview(URL.createObjectURL(file));
-            console.log('Image selected:', file);
         } else {
-            setFormData({
-                ...formData,
+            setFormData(prevState => ({
+                ...prevState,
                 [name]: value
-            });
-            if (name === 'explanation' && value.trim() !== '') {
-                setIsGenerateButtonActive(true);
-            } else if (name === 'explanation' && value.trim() === '') {
-                setIsGenerateButtonActive(false);
-            }
-            console.log(`${name} changed:`, value);
+            }));
         }
     };
 
     const handleAudioStop = (blobUrl, blob) => {
-        setFormData({
-            ...formData,
+        setFormData(prevState => ({
+            ...prevState,
             audio: blob
-        });
+        }));
         setAudioPreview(blobUrl);
-        console.log('Audio recorded:', blob);
-        console.log('Audio URL:', blobUrl);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setIsSubmitSuccessful(false);
+
+        
+    // Log the API host to check if it's correctly loaded
+    console.log('API Host:', config.apiHost);
+    
         const data = new FormData();
         data.append('slang', formData.slang);
         data.append('explanation', formData.explanation);
@@ -61,99 +61,105 @@ const AddSlang = () => {
         if (formData.audio) {
             data.append('audio', formData.audio);
         }
-
+    
         const username = sessionStorage.getItem('username');
         if (username) {
             data.append('contributor', username);
         }
-
-        const currentTime = new Date().toISOString();
-        data.append('time', currentTime);
-
+    
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/addSlang.php', data, {
+            const response = await axios.post(`${config.apiHost}/addSlang.php`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             console.log('Response:', response.data);
+            setIsSubmitSuccessful(true);
         } catch (error) {
             console.error('Error adding slang:', error);
+            alert('Failed to submit: ' + (error.response ? JSON.stringify(error.response.data) : error.message));
         } finally {
             setIsSubmitting(false);
         }
     };
+    
 
     const handleGenerateImage = async () => {
+        setIsGeneratingImage(true);
+        setIsImageGenerated(false);
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/generateImage.php', {
+            const response = await axios.post(`${config.apiHost}/generateImage.php`, {
                 prompt: formData.explanation
             });
             const imageBlob = await fetch('data:image/png;base64,' + response.data).then(res => res.blob());
             const imageFile = new File([imageBlob], 'generated.png', { type: 'image/png' });
-            setFormData({
-                ...formData,
+            setFormData(prevState => ({
+                ...prevState,
                 image: imageFile
-            });
+            }));
             setImagePreview(URL.createObjectURL(imageFile));
-            console.log('Generated image:', imageFile);
+            setIsImageGenerated(true);
         } catch (error) {
             console.error('Error generating image:', error);
+        } finally {
+            setIsGeneratingImage(false);
         }
     };
 
     return (
-        <div className="add-slang-container">
+        <div className={styles['add-slang-container']}>
             <h2>Add New Slang</h2>
-            <form onSubmit={handleSubmit} className="slang-form">
-                <div className="left-section">
-                    <div className="image-preview">
+            <form onSubmit={handleSubmit} className={styles['slang-form']}>
+                <div className={styles['left-section']}>
+                    <div className={styles['image-preview']}>
                         {imagePreview ? (
                             <img src={imagePreview} alt="Preview" />
                         ) : (
                             <span>Image preview will appear here</span>
                         )}
                     </div>
-                    <div className="button-group">
+                    <div className={styles['button-group']}>
                         <button
                             type="button"
                             onClick={handleGenerateImage}
-                            disabled={!isGenerateButtonActive}
-                            className={`generate-button ${isGenerateButtonActive ? '' : 'disabled'}`}
+                            disabled={!formData.explanation || isGeneratingImage}
+                            className={`${styles['generate-button']} ${!formData.explanation ? styles['disabled'] : ''} ${isImageGenerated ? styles['success'] : ''}`}
                         >
-                            Generate Image
+                            {isImageGenerated ? 'Well Done' : isGeneratingImage ? 'Generating...' : 'Generate Image'}
                         </button>
-                        <input type="file" name="image" accept="image/*" onChange={handleChange} className="upload-button" />
+                        <input type="file" name="image" accept="image/*" onChange={handleChange} className={styles['upload-button']} />
                     </div>
                 </div>
-                <div className="right-section">
-                    <div className="form-group">
+                <div className={styles['right-section']}>
+                    <div className={styles['form-group']}>
                         <label>Slang:</label>
-                        <input type="text" name="slang" value={formData.slang} onChange={handleChange} className="slang-input" />
+                        <input type="text" name="slang" value={formData.slang} onChange={handleChange} className={styles['slang-input']} />
                     </div>
-                    <div className="form-group">
+                    <div className={styles['form-group']}>
                         <label>Explanation:</label>
-                        <textarea name="explanation" value={formData.explanation} onChange={handleChange} className="explanation-input" rows="4" />
+                        <textarea name="explanation" value={formData.explanation} onChange={handleChange} className={styles['explanation-input']} rows="4" />
                     </div>
-                    <div className="form-group">
+                    <div className={styles['form-group']}>
                         <label>Audio:</label>
-                        <div className="audio-controls">
-                            <ReactMediaRecorder
-                                audio
-                                onStop={handleAudioStop}
-                                render={({ startRecording, stopRecording, mediaBlobUrl, status }) => (
-                                    <div>
-                                        <button type="button" onClick={() => { console.log('Start recording'); startRecording(); }} style={{ marginRight: '10px' }}>Start Recording</button>
-                                        <button type="button" onClick={() => { console.log('Stop recording'); stopRecording(); }}>Stop Recording</button>
-                                        <p>Status: {status}</p>
-                                        {audioPreview && <audio src={audioPreview} controls style={{ display: 'block', marginTop: '10px' }} />}
-                                    </div>
-                                )}
-                            />
-                        </div>
+                        <ReactMediaRecorder
+                            audio
+                            onStop={handleAudioStop}
+                            render={({ startRecording, stopRecording, status }) => (
+                                <div>
+                                    <button type="button" onClick={startRecording} style={{ marginRight: '10px' }}>Start Recording</button>
+                                    <button type="button" onClick={stopRecording}>Stop Recording</button>
+                                    <p>Status: {status}</p>
+                                    {audioPreview && <audio src={audioPreview} controls style={{ display: 'block', marginTop: '10px' }} />}
+                                </div>
+                            )}
+                        />
                     </div>
-                    <button type="submit" className={`submit-button ${isSubmitting ? 'disabled' : ''}`} disabled={isSubmitting}>
-                        {isSubmitting ? 'Submitting...' : 'Add Slang'}
+                    <button
+                        type="submit"
+                        className={`${styles['submit-button']} ${isSubmitting ? styles['disabled'] : ''} ${isSubmitSuccessful ? styles['success'] : ''}`}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitSuccessful ? 'Well Done' : isSubmitting ? 'Submitting...' : 'Add Slang'}
                     </button>
                 </div>
             </form>

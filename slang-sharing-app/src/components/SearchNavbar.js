@@ -1,23 +1,25 @@
+// src/components/SearchNavbar/SearchNavbar.js
 import React, { useState } from 'react';
 import './SearchNavbar.css';
 import LoginModal from './LoginModal';
 
 const SearchNavbar = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [filterType, setFilterType] = useState('Slang');
     const [isListening, setIsListening] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSearch(searchTerm);
+        onSearch(searchTerm, filterType);
     };
-
+    
     const handleVoiceInput = () => {
         const recognition = new window.webkitSpeechRecognition();
         recognition.lang = 'en-AU';
         recognition.onresult = (event) => {
             setSearchTerm(event.results[0][0].transcript);
-            onSearch(event.results[0][0].transcript);
+            onSearch(event.results[0][0].transcript, filterType);
         };
         recognition.start();
         setIsListening(true);
@@ -37,6 +39,15 @@ const SearchNavbar = ({ onSearch }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                <select
+                    className="filter-select"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                >
+                    <option value="Slang">Slang</option>
+                    <option value="Explanation">Explanation</option>
+                    <option value="Contributor">Contributor</option>
+                </select>
                 <button type="button" className="voice-button" onClick={handleVoiceInput}>
                     {isListening ? 'Listening...' : '🎤'}
                 </button>

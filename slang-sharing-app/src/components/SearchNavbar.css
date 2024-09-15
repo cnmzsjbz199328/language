@@ -28,6 +28,7 @@
     flex: 1;
     max-width: 600px;
     margin: 0 20px;
+    align-items: center; /* 添加此行 */
 }
 
 .search-input {
@@ -39,6 +40,19 @@
 }
 
 .search-input:focus {
+    border-color: #0f0f0f;
+    outline: none;
+}
+
+.filter-select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    margin-right: 10px; /* 添加此行 */
+    transition: border-color 0.3s;
+}
+
+.filter-select:focus {
     border-color: #0f0f0f;
     outline: none;
 }
@@ -68,7 +82,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.voice-button:hover{
+.voice-button:hover {
     background-color: #5585b7;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

@@ -25,7 +25,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 48%; /* 让左右两部分各占50%的宽度 */
+    width: 48%;
 }
 
 .image-preview {
@@ -63,6 +63,11 @@
 .generate-button.disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+.generate-button.success {
+    background-color: gray;
+    color: white;
 }
 
 .upload-button {
@@ -114,10 +119,15 @@
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
-    align-self: flex-start; /* 确保提交按钮在右侧部分的最下方 */
+    align-self: flex-start;
 }
 
 .submit-button.disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+.submit-button.success {
+    background-color: gray;
+    color: white;
 }

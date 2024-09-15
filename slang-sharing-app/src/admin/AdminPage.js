@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './AdminPage.module.css'; // 导入模块化 CSS 文件
+import config from '../config'; // Adjust the path to your config.js file
 
 const AdminPage = () => {
     const [registrations, setRegistrations] = useState([]);
@@ -13,7 +14,7 @@ const AdminPage = () => {
 
     const fetchRegistrations = async () => {
         try {
-            const response = await axios.get('http://localhost/slang-sharing-backend/api/fetchRegistrations.php');
+            const response = await axios.get(`${config.apiHost}/fetchRegistrations.php`);
             setRegistrations(response.data);
         } catch (error) {
             console.error('Error fetching registrations:', error);
@@ -22,7 +23,7 @@ const AdminPage = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost/slang-sharing-backend/api/fetchUsers.php'); // 获取现有用户信息的 API
+            const response = await axios.get(`${config.apiHost}/fetchUsers.php`); // 获取现有用户信息的 API
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -31,7 +32,7 @@ const AdminPage = () => {
 
     const handleApprove = async (id) => {
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/approveRegistration.php', { id });
+            const response = await axios.post(`${config.apiHost}/approveRegistration.php`, { id });
             if (response.data.success) {
                 fetchRegistrations();
                 fetchUsers(); // 更新用户信息
@@ -45,7 +46,7 @@ const AdminPage = () => {
 
     const handleReject = async (id) => {
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/rejectRegistration.php', { id });
+            const response = await axios.post(`${config.apiHost}/rejectRegistration.php`, { id });
             if (response.data.success) {
                 fetchRegistrations();
             } else {
@@ -58,7 +59,7 @@ const AdminPage = () => {
 
     const handleRevertToRegistration = async (id) => {
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/revertToRegistration.php', { id });
+            const response = await axios.post(`${config.apiHost}/revertToRegistration.php`, { id });
             if (response.data.success) {
                 fetchUsers();
                 fetchRegistrations(); // 更新注册信息
@@ -72,7 +73,7 @@ const AdminPage = () => {
 
     const handleDeleteUser = async (id) => {
         try {
-            const response = await axios.post('http://localhost/slang-sharing-backend/api/deleteUser.php', { id });
+            const response = await axios.post(`${config.apiHost}/deleteUser.php`, { id });
             if (response.data.success) {
                 fetchUsers(); // 更新用户信息
             } else {

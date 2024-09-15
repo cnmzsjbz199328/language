@@ -1,22 +1,41 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ContentItem.module.css'; // 使用 CSS 模块
 
-const ContentItem = ({ id, imageSrc, slang, explanation, audioSrc, contributor, time }) => (
-    <div className={styles['content-item']}>
-        <div className={styles['content-item-id']}>{id}</div>
-        <div className={styles['content-item-image']}>
-            <img src={imageSrc} alt={slang} />
+const ContentItem = ({ id, imageSrc, slang, explanation, audioSrc, contributor, time }) => {
+    const audioRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const handleAudioToggle = () => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+            } else {
+                audioRef.current.play();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
+    return (
+        <div className={styles['content-item']}>
+            <div className={styles['content-item-id']}>{id}</div>
+            <div className={styles['content-item-image']}>
+                <img src={imageSrc} alt={slang} />
+            </div>
+            <div className={styles['content-item-slang']}>{slang}</div>
+            <div className={styles['content-item-explanation']}>{explanation}</div>
+            <div className={styles['content-item-contributor']}>{contributor}</div>
+            <div className={styles['content-item-time']}>{new Date(time).toLocaleString()}</div>
+            <div className={styles['content-item-audio']}>
+                <button onClick={handleAudioToggle}>
+                    {isPlaying ? '⏸️' : '🔊'}
+                </button>
+                <audio ref={audioRef} src={audioSrc} />
+            </div>
         </div>
-        <div className={styles['content-item-slang']}>{slang}</div>
-        <div className={styles['content-item-explanation']}>{explanation}</div>
-        <div className={styles['content-item-contributor']}>{contributor}</div>
-        <div className={styles['content-item-time']}>{new Date(time).toLocaleString()}</div>
-        <div className={styles['content-item-audio']}>
-            <button onClick={() => new Audio(audioSrc).play()}>🔊</button>
-        </div>
-    </div>
-);
+    );
+};
 
 ContentItem.propTypes = {
     id: PropTypes.number.isRequired,

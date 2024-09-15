@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ContentItem from './ContentItem';
-import './Home.css';
+import styles from './Home.module.css';
+import config from '../config'; // Adjust the path to your config.js file
 
-const Home = () => {
+const Home = ({ filterLetter, searchTerm }) => {
     const [contentData, setContentData] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost/slang-sharing-backend/api/getSlangs.php');
-                setContentData(response.data);
+                const response = await axios.get(`${config.apiHost}/getSlangs.php`);
+                if (Array.isArray(response.data)) {
+                    setContentData(response.data);
+                } else {
+                    setError('Data is not an array');
+                    console.error('Data is not an array:', response.data);
+                }
             } catch (error) {
+                setError('Error fetching data');
                 console.error('Error fetching data:', error);
             }
         };
@@ -19,28 +27,44 @@ const Home = () => {
         fetchData();
     }, []);
 
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    const filteredContent = contentData.filter(item => {
+        if (filterLetter) {
+            return item.slang.toLowerCase().startsWith(filterLetter.toLowerCase());
+        }
+        if (searchTerm) {
+            return item.slang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                   item.explanation.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                   item.contributor.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return true;
+    });
+
     return (
-        <div className="content-container">
-            <div className="content-header">
-                <span>编号</span>
-                <span>图片</span>
+        <div className={styles['content-container']}>
+            <div className={styles['content-header']}>
+                <span>ID</span>
+                <span>Image</span>
                 <span>Slang</span>
-                <span>解释</span>
-                <span>贡献者</span>
-                <span>创建时间</span>
-                <span>语音</span>
+                <span>Explanation</span>
+                <span>Contributor</span>
+                <span>Created Time</span>
+                <span>Audio</span>
             </div>
-            <div className="content-body">
-                {contentData.map(item => (
+            <div className={styles['content-body']}>
+                {filteredContent.map(item => (
                     <ContentItem
                         key={item.id}
-                        id={Number(item.id)} // 确保 id 是数字类型
-                        imageSrc={`http://localhost/${item.imageSrc}`}
+                        id={Number(item.id)}
+                        imageSrc={`${config.apiHost}/${item.imageSrc}`}
                         slang={item.slang}
                         explanation={item.explanation}
-                        audioSrc={item.audioSrc}
-                        contributor={item.contributor || '未知'} // 提供默认值
-                        time={item.timestamp || new Date().toISOString()} // 提供默认值
+                        audioSrc={`${config.apiHost}/${item.audioSrc}`}
+                        contributor={item.contributor || 'Unknown'}
+                        time={item.timestamp || new Date().toISOString()}
                     />
                 ))}
             </div>

@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AlphabetNavigation from './components/AlphabetNavigation';
@@ -19,10 +20,10 @@ function App() {
         console.log(`选择的字母: ${letter}`);
     };
 
-    const handleSearch = (term) => {
+    const handleSearch = (term, filterType) => {
         setSearchTerm(term);
         setFilterLetter(''); // 清除字母过滤
-        console.log(`搜索词: ${term}`);
+        console.log(`搜索词: ${term}, 过滤类型: ${filterType}`);
     };
 
     return (
