@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AlphabetNavigation from './components/AlphabetNavigation';
@@ -13,6 +12,7 @@ import './App.css';
 function App() {
     const [filterLetter, setFilterLetter] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [filterType, setFilterType] = useState('Slang'); // 新增状态
 
     const handleLetterClick = (letter) => {
         setFilterLetter(letter);
@@ -20,10 +20,11 @@ function App() {
         console.log(`选择的字母: ${letter}`);
     };
 
-    const handleSearch = (term, filterType) => {
+    const handleSearch = (term, type) => {
         setSearchTerm(term);
+        setFilterType(type); // 设置过滤类型
         setFilterLetter(''); // 清除字母过滤
-        console.log(`搜索词: ${term}, 过滤类型: ${filterType}`);
+        console.log(`搜索词: ${term}, 过滤类型: ${type}`);
     };
 
     return (
@@ -34,7 +35,7 @@ function App() {
                         <SearchNavbar onSearch={handleSearch} />
                         <div className="content-both-container">
                             <AlphabetNavigation onLetterClick={handleLetterClick} />
-                            <Home filterLetter={filterLetter} searchTerm={searchTerm} />
+                            <Home filterLetter={filterLetter} searchTerm={searchTerm} filterType={filterType} /> {/* 传递 filterType */}
                         </div>
                         <Footer />
                     </div>

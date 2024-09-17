@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { ReactMediaRecorder } from 'react-media-recorder';
 import styles from './AddSlang.module.css'; // Import CSS module
 import config from '../config'; // Import config
+import SlangManager from '../components/SlangManage'; // 导入 SlangManager 组件
 
 const AddSlang = () => {
     const [formData, setFormData] = useState({
@@ -17,6 +18,11 @@ const AddSlang = () => {
     const [isImageGenerated, setIsImageGenerated] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
+    const [leftWidth, setLeftWidth] = useState(30); // 左侧宽度百分比
+    const [isDragging, setIsDragging] = useState(false);
+    const [, setFileName] = useState(''); // 用于存储文件名
+
+    const fileInputRef = useRef(null); // 引用文件输入控件
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -27,6 +33,7 @@ const AddSlang = () => {
                 [name]: file
             }));
             setImagePreview(URL.createObjectURL(file));
+            setFileName(file.name); // 设置文件名
         } else {
             setFormData(prevState => ({
                 ...prevState,
@@ -47,10 +54,6 @@ const AddSlang = () => {
         e.preventDefault();
         setIsSubmitting(true);
         setIsSubmitSuccessful(false);
-
-        
-    // Log the API host to check if it's correctly loaded
-    console.log('API Host:', config.apiHost);
     
         const data = new FormData();
         data.append('slang', formData.slang);
@@ -68,12 +71,13 @@ const AddSlang = () => {
         }
     
         try {
+            console.log('Submitting form data:', data);
             const response = await axios.post(`${config.apiHost}/addSlang.php`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            console.log('Response:', response.data);
+            console.log('Response from server:', response.data);
             setIsSubmitSuccessful(true);
         } catch (error) {
             console.error('Error adding slang:', error);
@@ -88,6 +92,7 @@ const AddSlang = () => {
         setIsGeneratingImage(true);
         setIsImageGenerated(false);
         try {
+            console.log('Generating image with prompt:', formData.explanation);
             const response = await axios.post(`${config.apiHost}/generateImage.php`, {
                 prompt: formData.explanation
             });
@@ -99,6 +104,7 @@ const AddSlang = () => {
             }));
             setImagePreview(URL.createObjectURL(imageFile));
             setIsImageGenerated(true);
+            console.log('Generated image file:', imageFile);
         } catch (error) {
             console.error('Error generating image:', error);
         } finally {
@@ -106,33 +112,32 @@ const AddSlang = () => {
         }
     };
 
+    const handleMouseDown = () => {
+        setIsDragging(true);
+    };
+
+    const handleMouseMove = (e) => {
+        if (isDragging) {
+            const newLeftWidth = (e.clientX / window.innerWidth) * 100;
+            if (newLeftWidth > 10 && newLeftWidth < 90) {
+                setLeftWidth(newLeftWidth);
+            }
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const username = sessionStorage.getItem('username'); // 获取 session 中的用户名
+
     return (
-        <div className={styles['add-slang-container']}>
+        <div className={styles['add-slang-container']} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
             <h2>Add New Slang</h2>
             <form onSubmit={handleSubmit} className={styles['slang-form']}>
-                <div className={styles['left-section']}>
-                    <div className={styles['image-preview']}>
-                        {imagePreview ? (
-                            <img src={imagePreview} alt="Preview" />
-                        ) : (
-                            <span>Image preview will appear here</span>
-                        )}
-                    </div>
-                    <div className={styles['button-group']}>
-                        <button
-                            type="button"
-                            onClick={handleGenerateImage}
-                            disabled={!formData.explanation || isGeneratingImage}
-                            className={`${styles['generate-button']} ${!formData.explanation ? styles['disabled'] : ''} ${isImageGenerated ? styles['success'] : ''}`}
-                        >
-                            {isImageGenerated ? 'Well Done' : isGeneratingImage ? 'Generating...' : 'Generate Image'}
-                        </button>
-                        <input type="file" name="image" accept="image/*" onChange={handleChange} className={styles['upload-button']} />
-                    </div>
-                </div>
-                <div className={styles['right-section']}>
+                <div className={styles['left-section']} style={{ width: `${leftWidth}%` }}>
                     <div className={styles['form-group']}>
-                        <label>Slang:</label>
+                        <label>Pronunciation:</label>
                         <input type="text" name="slang" value={formData.slang} onChange={handleChange} className={styles['slang-input']} />
                     </div>
                     <div className={styles['form-group']}>
@@ -154,6 +159,42 @@ const AddSlang = () => {
                             )}
                         />
                     </div>
+
+                    <div className={styles['image-preview']}>
+                        {imagePreview ? (
+                            <img src={imagePreview} alt="Preview" />
+                        ) : (
+                            <span>Image preview will appear here</span>
+                        )}
+                    </div>
+                    <div className={styles['button-group']}>
+                        <button
+                            type="button"
+                            onClick={handleGenerateImage}
+                            disabled={!formData.explanation || isGeneratingImage}
+                            className={`${styles['generate-button']} ${!formData.explanation ? styles['disabled'] : ''} ${isImageGenerated ? styles['success'] : ''}`}
+                        >
+                            {isImageGenerated ? 'Well Done' : isGeneratingImage ? 'Generating...' : 'Generate Image'}
+                        </button>
+                        <div className={styles['custom-file-upload']}>
+                            <input
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
+                                className={styles['upload-button']}
+                                ref={fileInputRef} // 使用 useRef 引用文件输入控件
+                                style={{ display: 'none' }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => fileInputRef.current.click()} // 使用 useRef 引用文件输入控件
+                                className={styles['upload-button']}
+                            >
+                                Upload Image
+                            </button>
+                        </div>
+                    </div>
                     <button
                         type="submit"
                         className={`${styles['submit-button']} ${isSubmitting ? styles['disabled'] : ''} ${isSubmitSuccessful ? styles['success'] : ''}`}
@@ -161,6 +202,16 @@ const AddSlang = () => {
                     >
                         {isSubmitSuccessful ? 'Well Done' : isSubmitting ? 'Submitting...' : 'Add Slang'}
                     </button>
+                </div>
+                <div className={styles['splitter']} onMouseDown={handleMouseDown}></div>
+                <div className={styles['right-section']} style={{ width: `${100 - leftWidth}%` }}>
+                    <SlangManager
+                        userType="user"
+                        sessionUserId={username} // 传递 session 中的用户名
+                        filterLetter="" // 直接传递空字符串
+                        searchTerm="" // 直接传递空字符串
+                        filterType="Slang" // 直接传递字符串
+                    />
                 </div>
             </form>
         </div>

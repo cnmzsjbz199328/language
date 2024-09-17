@@ -11,6 +11,8 @@ const SearchNavbar = ({ onSearch }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('Search Term:', searchTerm);
+        console.log('Filter Type:', filterType); // 检查过滤类型是否正确
         onSearch(searchTerm, filterType);
     };
     

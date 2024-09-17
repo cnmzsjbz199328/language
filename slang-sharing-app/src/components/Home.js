@@ -4,7 +4,7 @@ import ContentItem from './ContentItem';
 import styles from './Home.module.css';
 import config from '../config'; // Adjust the path to your config.js file
 
-const Home = ({ filterLetter, searchTerm }) => {
+const Home = ({ filterLetter, searchTerm, filterType }) => {
     const [contentData, setContentData] = useState([]);
     const [error, setError] = useState(null);
 
@@ -36,9 +36,16 @@ const Home = ({ filterLetter, searchTerm }) => {
             return item.slang.toLowerCase().startsWith(filterLetter.toLowerCase());
         }
         if (searchTerm) {
-            return item.slang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                   item.explanation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                   item.contributor.toLowerCase().includes(searchTerm.toLowerCase());
+            switch (filterType) {
+                case 'Slang':
+                    return item.slang.toLowerCase().includes(searchTerm.toLowerCase());
+                case 'Explanation':
+                    return item.explanation.toLowerCase().includes(searchTerm.toLowerCase());
+                case 'Contributor':
+                    return item.contributor.toLowerCase().includes(searchTerm.toLowerCase());
+                default:
+                    return true;
+            }
         }
         return true;
     });
@@ -48,7 +55,7 @@ const Home = ({ filterLetter, searchTerm }) => {
             <div className={styles['content-header']}>
                 <span>ID</span>
                 <span>Image</span>
-                <span>Slang</span>
+                <span>Pronouncation</span>
                 <span>Explanation</span>
                 <span>Contributor</span>
                 <span>Created Time</span>
@@ -65,6 +72,7 @@ const Home = ({ filterLetter, searchTerm }) => {
                         audioSrc={`${config.apiHost}/${item.audioSrc}`}
                         contributor={item.contributor || 'Unknown'}
                         time={item.timestamp || new Date().toISOString()}
+                        className={styles['content-item']}
                     />
                 ))}
             </div>

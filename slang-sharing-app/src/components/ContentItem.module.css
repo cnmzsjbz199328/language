@@ -1,59 +1,48 @@
 .content-item {
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
 }
 
 .content-item > div {
-    flex: 1;
     text-align: center;
 }
 
-/* Individual flex properties for each item */
-.content-item-id {
-    order: 1; /* Adjust the order as needed */
-    transform: translateX(-20px);
+.content-item > div:nth-child(1) {
+    flex: 1; /* ID */
 }
 
-.content-item-image {
-    order: 2; /* Adjust the order as needed */
+.content-item > div:nth-child(2) {
+    flex: 4; /* Image */
     height: 150px;
     width: 50px;
     object-fit: cover;
-    border-radius: 50%;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transform: translateX(-50px);
 }
 
-.content-item-slang {
-    order: 3; /* Adjust the order as needed */
-
-    transform: translateX(-60px);
+.content-item > div:nth-child(3) {
+    flex: 3; /* Pronunciation */
 }
 
-.content-item-explanation {
-    order: 4; /* Adjust the order as needed */ 
-    transform: translateX(-60px); 
+.content-item > div:nth-child(4) {
+    flex: 5; /* Explanation */
 }
 
-.content-item-contributor {
-    order: 5; /* Adjust the order as needed */
-    transform: translateX(-20px);
+.content-item > div:nth-child(5) {
+    flex: 2; /* Contributor */
 }
 
-.content-item-time {
-    order: 6; /* Adjust the order as needed */
-    transform: translateX(20px);
+.content-item > div:nth-child(6) {
+    flex: 2; /* Created Time */
 }
 
-.content-item-audio {
-    order: 7; /* Adjust the order as needed */
-    transform: translateX(28px);
+.content-item > div:nth-child(7) {
+    flex: 1; /* Audio */
 }
 
 .content-item-image img {
@@ -67,4 +56,26 @@
     border: none;
     cursor: pointer;
     font-size: 18px;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .content-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .content-item > div {
+        width: 100%;
+        text-align: left;
+        padding: 5px 0;
+    }
+
+    .content-item img {
+        height: auto;
+        width: 100%;
+        max-width: 150px;
+        margin-bottom: 10px;
+    }
 }
