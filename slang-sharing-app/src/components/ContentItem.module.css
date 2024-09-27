@@ -76,6 +76,10 @@
         height: auto;
         width: 100%;
         max-width: 150px;
-        margin-bottom: 10px;
+    }
+
+    .content-item > div:nth-child(2) {
+        height: auto;
+        width: 100%;
     }
 }

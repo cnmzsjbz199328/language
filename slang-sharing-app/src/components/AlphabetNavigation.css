@@ -38,3 +38,16 @@
     color: #0056b3;
     border-color: #0056b3; /* 聚焦时改变边框颜色 */
 }
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .alphabet-navigation {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        width: 60px; /* 适当宽度 */
+        height: 90%; /* 相对于父容器的全高度 */
+        overflow-y: auto;
+    }
+}

@@ -30,7 +30,8 @@
     flex-direction: column;
     justify-content: space-between;
     width: 30%;
-    padding-right: 10px; /* 添加右侧间距 */
+    padding-right: 10px;
+    /* 添加右侧间距 */
 }
 
 .right-section {
@@ -38,7 +39,8 @@
     flex-direction: column;
     justify-content: space-between;
     width: 65%;
-    padding-left: 10px; /* 添加左侧间距 */
+    padding-left: 10px;
+    /* 添加左侧间距 */
 }
 
 .splitter {
@@ -49,9 +51,12 @@
     bottom: 0;
     left: 30%;
     z-index: 1;
-    border-left: 2px dashed #000; /* 添加虚线样式 */
-    border-right: 2px dashed #000; /* 添加虚线样式 */
+    border-left: 2px dashed #000;
+    /* 添加虚线样式 */
+    border-right: 2px dashed #000;
+    /* 添加虚线样式 */
 }
+
 
 .image-preview {
     width: 100%;
@@ -135,10 +140,9 @@
     width: 95%;
     padding: 8px;
     border: none;
-    border-bottom: 2px solid #007BFF;
+    border-bottom: 2px solid #000000;
     margin-top: 10px;
     outline: none;
-    border-radius: 5px;
 }
 
 .explanation-input {
@@ -175,4 +179,25 @@
 .submit-button.success {
     background-color: gray;
     color: white;
+}
+
+@media (max-width: 768px) {
+    .left-section {
+        width: 90% !important;
+        padding-right: 10px;
+        /* 添加右侧间距 */
+    }
+
+    .slang-form {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+        flex-direction: column;
+    }
+
+    .splitter {
+        display: none;
+    }
+
 }

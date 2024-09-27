@@ -91,3 +91,27 @@
     width: 100%;
     position: relative; /* 添加相对定位 */
 }
+
+@media (max-width: 768px) {
+    .slang-form {
+        flex-direction: column;
+    }
+
+    .container {
+        width: 100%;
+        display: inline-flex;
+        gap: 10px;
+        justify-content: space-between;
+        position: relative; /* 添加相对定位 */
+        flex-direction: column;
+
+    }
+
+    .userManagementSection {
+        margin-top: 10px;
+        gap: 10px;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

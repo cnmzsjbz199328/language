@@ -5,6 +5,9 @@
     position: fixed;
     width: 100%;
     bottom: 0;
+    background-color: #fff; /* 添加背景颜色以确保内容可见 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* 添加阴影以区分内容 */
+    z-index: 1000; /* 确保在其他内容之上 */
 }
 
 .footer-content {
@@ -34,4 +37,24 @@
 
 .social-media a:hover {
     color: #007bff;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    .footer {
+        padding: 10px 0;
+    }
+
+    .footer-content {
+        padding: 0 10px;
+    }
+
+    .footer-content p {
+        font-size: 12px;
+    }
+
+    .social-media a {
+        font-size: 14px;
+        margin: 0 5px;
+    }
 }
