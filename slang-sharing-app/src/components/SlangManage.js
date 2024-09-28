@@ -114,6 +114,7 @@ const SlangManager = ({ userType, sessionUserId, filterLetter, searchTerm, filte
                         />
                         <div>
                             <button
+                                type="button"  // 确保删除按钮的 type 属性设置为 button
                                 className={`${styles['delete-button']} ${confirmDelete[item.id] ? styles['confirm-delete'] : ''}`}
                                 onClick={() => handleDeleteClick(item.id)}
                             >

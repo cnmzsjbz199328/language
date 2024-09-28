@@ -54,7 +54,7 @@ const AddSlang = () => {
         e.preventDefault();
         setIsSubmitting(true);
         setIsSubmitSuccessful(false);
-    
+
         const data = new FormData();
         data.append('slang', formData.slang);
         data.append('explanation', formData.explanation);
@@ -64,12 +64,12 @@ const AddSlang = () => {
         if (formData.audio) {
             data.append('audio', formData.audio);
         }
-    
+
         const username = sessionStorage.getItem('username');
         if (username) {
             data.append('contributor', username);
         }
-    
+
         try {
             console.log('Submitting form data:', data);
             const response = await axios.post(`${config.apiHost}/addSlang.php`, data, {
@@ -79,6 +79,11 @@ const AddSlang = () => {
             });
             console.log('Response from server:', response.data);
             setIsSubmitSuccessful(true);
+            // 按钮变灰并显示 "Done"
+            setTimeout(() => {
+                setIsSubmitSuccessful(false);
+            }, 3000);
+
         } catch (error) {
             console.error('Error adding slang:', error);
             alert('Failed to submit: ' + (error.response ? JSON.stringify(error.response.data) : error.message));
@@ -86,7 +91,7 @@ const AddSlang = () => {
             setIsSubmitting(false);
         }
     };
-    
+
 
     const handleGenerateImage = async () => {
         setIsGeneratingImage(true);

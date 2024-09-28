@@ -1,27 +1,26 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import styles from './ContentItem.module.css'; // 使用 CSS 模块
+import styles from './ContentItem.module.css';
 
 const ContentItem = ({ id, imageSrc, slang, explanation, audioSrc, contributor, time }) => {
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
     const handleAudioToggle = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-            } else {
-                audioRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
         }
+        setIsPlaying(!isPlaying);
     };
+
 
     return (
         <div className={styles['content-item']}>
             <div className={styles['content-item-id']}>{id}</div>
             <div className={styles['content-item-image']}>
-                <img src={imageSrc} alt={slang} />
+                <img src={imageSrc} alt={`Slang ${id}`} referrerPolicy="no-referrer" />
             </div>
             <div className={styles['content-item-slang']}>{slang}</div>
             <div className={styles['content-item-explanation']}>{explanation}</div>
